@@ -1,0 +1,76 @@
+{
+  "_meta": {
+    "source": "Bootstrap fallback prices in USD per token. Used when LiteLLM fetch fails or --offline with empty cache. Refreshed manually.",
+    "updated": "2026-05-06"
+  },
+  "gpt-4o": {
+    "inputCostPerToken": 0.0000025,
+    "outputCostPerToken": 0.00001,
+    "maxInputTokens": 128000,
+    "maxOutputTokens": 16384,
+    "provider": "openai"
+  },
+  "gpt-4o-mini": {
+    "inputCostPerToken": 0.00000015,
+    "outputCostPerToken": 0.0000006,
+    "maxInputTokens": 128000,
+    "maxOutputTokens": 16384,
+    "provider": "openai"
+  },
+  "gpt-4-turbo": {
+    "inputCostPerToken": 0.00001,
+    "outputCostPerToken": 0.00003,
+    "maxInputTokens": 128000,
+    "maxOutputTokens": 4096,
+    "provider": "openai"
+  },
+  "gpt-3.5-turbo": {
+    "inputCostPerToken": 0.0000005,
+    "outputCostPerToken": 0.0000015,
+    "maxInputTokens": 16385,
+    "maxOutputTokens": 4096,
+    "provider": "openai"
+  },
+  "claude-3-5-sonnet-20241022": {
+    "inputCostPerToken": 0.000003,
+    "outputCostPerToken": 0.000015,
+    "maxInputTokens": 200000,
+    "maxOutputTokens": 8192,
+    "provider": "anthropic"
+  },
+  "claude-3-5-haiku-20241022": {
+    "inputCostPerToken": 0.0000008,
+    "outputCostPerToken": 0.000004,
+    "maxInputTokens": 200000,
+    "maxOutputTokens": 8192,
+    "provider": "anthropic"
+  },
+  "claude-3-opus-20240229": {
+    "inputCostPerToken": 0.000015,
+    "outputCostPerToken": 0.000075,
+    "maxInputTokens": 200000,
+    "maxOutputTokens": 4096,
+    "provider": "anthropic"
+  },
+  "gemini-1.5-pro": {
+    "inputCostPerToken": 0.00000125,
+    "outputCostPerToken": 0.000005,
+    "maxInputTokens": 2000000,
+    "maxOutputTokens": 8192,
+    "provider": "gemini"
+  },
+  "gemini-1.5-flash": {
+    "inputCostPerToken": 0.000000075,
+    "outputCostPerToken": 0.0000003,
+    "maxInputTokens": 1000000,
+    "maxOutputTokens": 8192,
+    "provider": "gemini"
+  },
+  "deepseek-chat": {
+    "inputCostPerToken": 0.00000027,
+    "outputCostPerToken": 0.0000011,
+    "maxInputTokens": 64000,
+    "maxOutputTokens": 8192,
+    "provider": "deepseek"
+  }
+}
