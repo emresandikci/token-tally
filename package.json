@@ -1,0 +1,49 @@
+{
+  "name": "@emstack/token-tally",
+  "version": "0.1.0",
+  "description": "Scan a project, count LLM tokens, and estimate cost using live pricing.",
+  "type": "module",
+  "bin": {
+    "token-tally": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun build src/cli.ts --target=node --outfile=dist/cli.js --banner=\"#!/usr/bin/env node\" && chmod +x dist/cli.js",
+    "dev": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "llm",
+    "tokens",
+    "cost",
+    "openai",
+    "anthropic",
+    "gemini",
+    "cli"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@anthropic-ai/tokenizer": "^0.0.4",
+    "@google/generative-ai": "^0.21.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "globby": "^14.0.2",
+    "js-tiktoken": "^1.0.15",
+    "ora": "^8.1.1",
+    "p-limit": "^6.1.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}
