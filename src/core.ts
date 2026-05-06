@@ -14,6 +14,7 @@ export interface TallyOptions extends ScanOptions, ResolveTokenizerOptions {
   outputTokens?: number;
   concurrency?: number;
   warnContext?: boolean;
+  fileHeaders?: boolean;
   onProgress?: (done: number, total: number) => void;
 }
 
@@ -30,8 +31,25 @@ export async function tally(opts: TallyOptions): Promise<TallyResult> {
   const results: FileTokenResult[] = await Promise.all(
     files.map((f) =>
       limit(async () => {
-        const text = await readFile(f.absolutePath, "utf8");
-        const tokens = await tokenizer.count(text, resolvedModel);
+        let text: string;
+        try {
+          text = await readFile(f.absolutePath, "utf8");
+        } catch {
+          // unreadable or binary — skip silently
+          done += 1;
+          opts.onProgress?.(done, files.length);
+          return { path: f.relativePath, bytes: f.bytes, tokens: 0 };
+        }
+        // heuristic binary check: null bytes indicate non-text content
+        if (text.includes("\0")) {
+          done += 1;
+          opts.onProgress?.(done, files.length);
+          return { path: f.relativePath, bytes: f.bytes, tokens: 0 };
+        }
+        const content = opts.fileHeaders
+          ? `# file: ${f.relativePath}\n${text}`
+          : text;
+        const tokens = await tokenizer.count(content, resolvedModel);
         done += 1;
         opts.onProgress?.(done, files.length);
         return { path: f.relativePath, bytes: f.bytes, tokens };

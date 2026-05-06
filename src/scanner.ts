@@ -98,7 +98,7 @@ export async function scan(opts: ScanOptions): Promise<ScannedFile[]> {
     absolute: true,
     gitignore: opts.respectGitignore !== false,
     ignore,
-    dot: false,
+    dot: true,
     onlyFiles: true,
   });
 

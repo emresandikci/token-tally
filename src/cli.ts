@@ -46,6 +46,11 @@ program
   )
   .option("--concurrency <n>", "parallel file workers", (v) => parseInt(v, 10))
   .option(
+    "--file-headers",
+    "prepend '# file: <path>' to each file before counting (accounts for prompt wrapper tokens)",
+    false,
+  )
+  .option(
     "--anthropic-api-key <key>",
     "use Anthropic count_tokens API for exact Claude counts (env: ANTHROPIC_API_KEY)",
   )
@@ -69,6 +74,7 @@ interface PromptOpts {
   refresh?: boolean;
   offline?: boolean;
   concurrency?: number;
+  fileHeaders?: boolean;
   anthropicApiKey?: string;
   geminiApiKey?: string;
 }
@@ -334,6 +340,11 @@ async function collectInteractiveInputs(
       "Gemini API key — exact Gemini token counts via API",
       opts.geminiApiKey,
     );
+    const fileHeaders = await askBoolean(
+      ask,
+      "File headers — prepend '# file: <path>' to each file (models prompt wrapper tokens)",
+      Boolean(opts.fileHeaders),
+    );
 
     return {
       pathArg: nextPath,
@@ -352,6 +363,7 @@ async function collectInteractiveInputs(
         refresh,
         offline,
         concurrency,
+        fileHeaders,
         anthropicApiKey,
         geminiApiKey,
       } satisfies PromptOpts,
@@ -417,6 +429,7 @@ program.parseAsync(process.argv).then(async () => {
       outputTokens: opts.outputTokens,
       concurrency: opts.concurrency,
       warnContext: Boolean(opts.warnContext),
+      fileHeaders: Boolean(opts.fileHeaders),
       anthropicApiKey: opts.anthropicApiKey ?? process.env.ANTHROPIC_API_KEY,
       geminiApiKey:
         opts.geminiApiKey ??
