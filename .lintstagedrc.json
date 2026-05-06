@@ -1,0 +1,4 @@
+{
+  "./src/**/*.{ts,tsx,json}": ["bun run lint", "bun run format"],
+  "./tests/**/*.{ts,tsx,json}": ["bun run lint", "bun run format"]
+}

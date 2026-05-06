@@ -1,0 +1,9 @@
+if [ "$SKIP_COMMIT_CHECK" = "true" ]; then
+  echo "Commitizen/override detected, running lint-staged"
+  bunx --bun lint-staged
+  exit 0
+else
+  echo "Direct git commit disabled"
+  echo "Please use SKIP_COMMIT_CHECK=true git commit -m \"...\""
+  exit 1
+fi

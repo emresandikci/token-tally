@@ -1,0 +1,7 @@
+node_modules
+.pnpm
+dist
+build
+coverage
+*.min.js
+bun.lock
