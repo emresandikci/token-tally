@@ -3,15 +3,52 @@ import { stat } from "node:fs/promises";
 import path from "node:path";
 
 export const DEFAULT_EXTENSIONS = [
-  "ts", "tsx", "js", "jsx", "mjs", "cjs",
-  "py", "rb", "php", "go", "rs", "java", "kt", "scala", "swift",
-  "c", "cc", "cpp", "h", "hh", "hpp", "cs",
-  "html", "css", "scss", "sass", "less",
-  "md", "mdx", "rst", "txt",
-  "json", "yaml", "yml", "toml", "xml",
-  "sh", "bash", "zsh", "fish",
-  "sql", "graphql", "gql",
-  "vue", "svelte", "astro",
+  "ts",
+  "tsx",
+  "js",
+  "jsx",
+  "mjs",
+  "cjs",
+  "py",
+  "rb",
+  "php",
+  "go",
+  "rs",
+  "java",
+  "kt",
+  "scala",
+  "swift",
+  "c",
+  "cc",
+  "cpp",
+  "h",
+  "hh",
+  "hpp",
+  "cs",
+  "html",
+  "css",
+  "scss",
+  "sass",
+  "less",
+  "md",
+  "mdx",
+  "rst",
+  "txt",
+  "json",
+  "yaml",
+  "yml",
+  "toml",
+  "xml",
+  "sh",
+  "bash",
+  "zsh",
+  "fish",
+  "sql",
+  "graphql",
+  "gql",
+  "vue",
+  "svelte",
+  "astro",
 ];
 
 export interface ScanOptions {
@@ -33,9 +70,10 @@ export async function scan(opts: ScanOptions): Promise<ScannedFile[]> {
   const cwd = path.resolve(opts.cwd);
   const exts = opts.extensions ?? DEFAULT_EXTENSIONS;
 
-  const patterns = opts.include && opts.include.length > 0
-    ? opts.include
-    : [`**/*.{${exts.join(",")}}`];
+  const patterns =
+    opts.include && opts.include.length > 0
+      ? opts.include
+      : [`**/*.{${exts.join(",")}}`];
 
   const ignore = [
     "**/node_modules/**",

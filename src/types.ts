@@ -1,4 +1,9 @@
-export type Provider = "openai" | "anthropic" | "gemini" | "deepseek" | "unknown";
+export type Provider =
+  | "openai"
+  | "anthropic"
+  | "gemini"
+  | "deepseek"
+  | "unknown";
 
 export interface ModelPricing {
   inputCostPerToken: number;

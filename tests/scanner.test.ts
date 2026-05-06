@@ -11,7 +11,10 @@ async function makeFixture() {
   await writeFile(path.join(dir, "src", "index.ts"), "export const x = 1;\n");
   await writeFile(path.join(dir, "src", "helper.py"), "x = 1\n");
   await writeFile(path.join(dir, "src", "skip.bin"), "binary");
-  await writeFile(path.join(dir, "node_modules", "lib", "dep.js"), "module.exports = 1;");
+  await writeFile(
+    path.join(dir, "node_modules", "lib", "dep.js"),
+    "module.exports = 1;",
+  );
   await writeFile(path.join(dir, ".gitignore"), "secret.ts\n");
   await writeFile(path.join(dir, "secret.ts"), "leak");
   return dir;
@@ -35,7 +38,11 @@ test("scan picks code files, ignores node_modules and .gitignore", async () => {
 test("scan honors include + exclude globs", async () => {
   const dir = await makeFixture();
   try {
-    const files = await scan({ cwd: dir, include: ["src/**/*.ts"], exclude: ["**/helper.*"] });
+    const files = await scan({
+      cwd: dir,
+      include: ["src/**/*.ts"],
+      exclude: ["**/helper.*"],
+    });
     const names = files.map((f) => f.relativePath);
     expect(names).toEqual(["src/index.ts"]);
   } finally {

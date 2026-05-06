@@ -3,7 +3,10 @@ import { cpus } from "node:os";
 import pLimit from "p-limit";
 import { scan, type ScanOptions } from "./scanner.ts";
 import { resolveModel } from "./pricing/resolver.ts";
-import { resolveTokenizer, type ResolveTokenizerOptions } from "./tokenizers/index.ts";
+import {
+  resolveTokenizer,
+  type ResolveTokenizerOptions,
+} from "./tokenizers/index.ts";
 import type { FileTokenResult, TallyResult } from "./types.ts";
 
 export interface TallyOptions extends ScanOptions, ResolveTokenizerOptions {
@@ -19,7 +22,8 @@ export async function tally(opts: TallyOptions): Promise<TallyResult> {
   const tokenizer = await resolveTokenizer(pricing.provider, opts);
   const files = await scan(opts);
 
-  const concurrency = opts.concurrency ?? Math.max(2, Math.min(8, cpus().length));
+  const concurrency =
+    opts.concurrency ?? Math.max(2, Math.min(8, cpus().length));
   const limit = pLimit(concurrency);
   let done = 0;
 
@@ -44,7 +48,11 @@ export async function tally(opts: TallyOptions): Promise<TallyResult> {
   if (tokenizer.approximate && tokenizer.note) {
     warnings.push(tokenizer.note);
   }
-  if (opts.warnContext && pricing.maxInputTokens && totalTokens > pricing.maxInputTokens) {
+  if (
+    opts.warnContext &&
+    pricing.maxInputTokens &&
+    totalTokens > pricing.maxInputTokens
+  ) {
     warnings.push(
       `Total input tokens (${totalTokens.toLocaleString()}) exceed model context window (${pricing.maxInputTokens.toLocaleString()}). Single-call usage is impossible without splitting.`,
     );

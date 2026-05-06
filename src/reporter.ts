@@ -6,17 +6,38 @@ const usd = (n: number) => `$${n.toFixed(n < 0.01 ? 6 : 4)}`;
 const num = (n: number) => n.toLocaleString("en-US");
 
 export function renderText(result: TallyResult, opts: { verbose: boolean }) {
-  const { files, totalTokens, outputTokens, inputCostUsd, outputCostUsd, totalCostUsd, model, provider, pricing, warnings } = result;
+  const {
+    files,
+    totalTokens,
+    outputTokens,
+    inputCostUsd,
+    outputCostUsd,
+    totalCostUsd,
+    model,
+    provider,
+    pricing,
+    warnings,
+  } = result;
 
   if (opts.verbose && files.length > 0) {
     const table = new Table({
-      head: [pc.bold("File"), pc.bold("Bytes"), pc.bold("Tokens"), pc.bold("Input cost")],
+      head: [
+        pc.bold("File"),
+        pc.bold("Bytes"),
+        pc.bold("Tokens"),
+        pc.bold("Input cost"),
+      ],
       colAligns: ["left", "right", "right", "right"],
       style: { head: [], border: [] },
     });
     const sorted = [...files].sort((a, b) => b.tokens - a.tokens);
     for (const f of sorted) {
-      table.push([f.path, num(f.bytes), num(f.tokens), usd(f.tokens * pricing.inputCostPerToken)]);
+      table.push([
+        f.path,
+        num(f.bytes),
+        num(f.tokens),
+        usd(f.tokens * pricing.inputCostPerToken),
+      ]);
     }
     console.log(table.toString());
   }
@@ -45,19 +66,23 @@ export function renderText(result: TallyResult, opts: { verbose: boolean }) {
 }
 
 export function renderJson(result: TallyResult): string {
-  return JSON.stringify({
-    model: result.model,
-    provider: result.provider,
-    files: result.files,
-    totals: {
-      files: result.files.length,
-      inputTokens: result.totalTokens,
-      outputTokens: result.outputTokens,
-      inputCostUsd: result.inputCostUsd,
-      outputCostUsd: result.outputCostUsd,
-      totalCostUsd: result.totalCostUsd,
+  return JSON.stringify(
+    {
+      model: result.model,
+      provider: result.provider,
+      files: result.files,
+      totals: {
+        files: result.files.length,
+        inputTokens: result.totalTokens,
+        outputTokens: result.outputTokens,
+        inputCostUsd: result.inputCostUsd,
+        outputCostUsd: result.outputCostUsd,
+        totalCostUsd: result.totalCostUsd,
+      },
+      pricing: result.pricing,
+      warnings: result.warnings,
     },
-    pricing: result.pricing,
-    warnings: result.warnings,
-  }, null, 2);
+    null,
+    2,
+  );
 }

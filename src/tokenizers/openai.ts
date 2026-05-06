@@ -1,4 +1,9 @@
-import { encodingForModel, getEncoding, type Tiktoken, type TiktokenModel } from "js-tiktoken";
+import {
+  encodingForModel,
+  getEncoding,
+  type Tiktoken,
+  type TiktokenModel,
+} from "js-tiktoken";
 import type { Tokenizer } from "../types.ts";
 
 const cache = new Map<string, Tiktoken>();
@@ -10,7 +15,16 @@ function getEncoder(model: string): Tiktoken {
   try {
     enc = encodingForModel(model as TiktokenModel);
   } catch {
-    enc = getEncoding(model.startsWith("gpt-4o") || model.startsWith("o1") || model.startsWith("o3") || model.startsWith("o4") || model.startsWith("gpt-4.1") || model.startsWith("gpt-5") ? "o200k_base" : "cl100k_base");
+    enc = getEncoding(
+      model.startsWith("gpt-4o") ||
+        model.startsWith("o1") ||
+        model.startsWith("o3") ||
+        model.startsWith("o4") ||
+        model.startsWith("gpt-4.1") ||
+        model.startsWith("gpt-5")
+        ? "o200k_base"
+        : "cl100k_base",
+    );
   }
   cache.set(model, enc);
   return enc;

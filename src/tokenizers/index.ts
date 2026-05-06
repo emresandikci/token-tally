@@ -6,7 +6,10 @@ export interface ResolveTokenizerOptions {
   geminiApiKey?: string;
 }
 
-export async function resolveTokenizer(provider: Provider, opts: ResolveTokenizerOptions = {}): Promise<Tokenizer> {
+export async function resolveTokenizer(
+  provider: Provider,
+  opts: ResolveTokenizerOptions = {},
+): Promise<Tokenizer> {
   switch (provider) {
     case "openai":
       return openaiTokenizer;

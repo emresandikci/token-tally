@@ -24,7 +24,10 @@ export async function readCache(): Promise<CachedPrices | null> {
   }
 }
 
-export async function writeCache(table: Record<string, ModelPricing>, source: string): Promise<void> {
+export async function writeCache(
+  table: Record<string, ModelPricing>,
+  source: string,
+): Promise<void> {
   await mkdir(CACHE_DIR, { recursive: true });
   const payload: CachedPrices = { fetchedAt: Date.now(), source, table };
   await writeFile(CACHE_FILE, JSON.stringify(payload), "utf8");

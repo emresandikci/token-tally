@@ -54,6 +54,14 @@ test("resolver strips provider prefix", () => {
 });
 
 test("resolver throws on unknown model", () => {
-  setPriceTable({ "gpt-4o": { inputCostPerToken: 1e-6, outputCostPerToken: 1e-6, provider: "openai" } });
-  expect(() => resolveModel("totally-nonexistent-zzz")).toThrow(/Unknown model/);
+  setPriceTable({
+    "gpt-4o": {
+      inputCostPerToken: 1e-6,
+      outputCostPerToken: 1e-6,
+      provider: "openai",
+    },
+  });
+  expect(() => resolveModel("totally-nonexistent-zzz")).toThrow(
+    /Unknown model/,
+  );
 });

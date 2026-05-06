@@ -13,21 +13,47 @@ program
   .name("token-tally")
   .description("Scan a project, count LLM tokens, and estimate cost.")
   .argument("[path]", "directory to scan", ".")
-  .option("-m, --model <name>", "model id, e.g. gpt-4o, claude-3-5-sonnet-20241022")
+  .option(
+    "-m, --model <name>",
+    "model id, e.g. gpt-4o, claude-3-5-sonnet-20241022",
+  )
   .option("-i, --include <glob...>", "glob patterns to include")
   .option("-e, --exclude <glob...>", "glob patterns to exclude")
   .option("--no-gitignore", "do not honor .gitignore")
   .option("--max-files <n>", "cap on file count", (v) => parseInt(v, 10))
-  .option("--output-tokens <n>", "estimated output tokens for total cost", (v) => parseInt(v, 10), 0)
-  .option("--budget <usd>", "fail with exit code 2 if total cost exceeds this USD amount", (v) => parseFloat(v))
-  .option("--warn-context", "warn if total tokens exceed model context window", false)
+  .option(
+    "--output-tokens <n>",
+    "estimated output tokens for total cost",
+    (v) => parseInt(v, 10),
+    0,
+  )
+  .option(
+    "--budget <usd>",
+    "fail with exit code 2 if total cost exceeds this USD amount",
+    (v) => parseFloat(v),
+  )
+  .option(
+    "--warn-context",
+    "warn if total tokens exceed model context window",
+    false,
+  )
   .option("--json", "emit machine-readable JSON instead of a table", false)
   .option("-v, --verbose", "show per-file token breakdown", false)
   .option("--refresh", "force refresh of remote price table", false)
-  .option("--offline", "use cached/static prices only; never hit the network", false)
+  .option(
+    "--offline",
+    "use cached/static prices only; never hit the network",
+    false,
+  )
   .option("--concurrency <n>", "parallel file workers", (v) => parseInt(v, 10))
-  .option("--anthropic-api-key <key>", "use Anthropic count_tokens API for exact Claude counts (env: ANTHROPIC_API_KEY)")
-  .option("--gemini-api-key <key>", "use Gemini countTokens API for exact counts (env: GOOGLE_API_KEY)")
+  .option(
+    "--anthropic-api-key <key>",
+    "use Anthropic count_tokens API for exact Claude counts (env: ANTHROPIC_API_KEY)",
+  )
+  .option(
+    "--gemini-api-key <key>",
+    "use Gemini countTokens API for exact counts (env: GOOGLE_API_KEY)",
+  )
   .version("0.1.0");
 
 interface PromptOpts {
@@ -64,7 +90,9 @@ async function askBoolean(
   while (true) {
     const yPart = current ? pc.green("Y") : "y";
     const nPart = current ? "n" : pc.green("N");
-    const answer = (await ask(`${label} [${yPart}/${nPart}]: `)).trim().toLowerCase();
+    const answer = (await ask(`${label} [${yPart}/${nPart}]: `))
+      .trim()
+      .toLowerCase();
     if (!answer) return current;
     if (["y", "yes"].includes(answer)) return true;
     if (["n", "no"].includes(answer)) return false;
@@ -78,7 +106,10 @@ async function askOptionalNumber(
   current: number | undefined,
 ): Promise<number | undefined> {
   while (true) {
-    const suffix = current === undefined ? ` [${pc.dim("none")}]` : ` [${pc.green(String(current))}]`;
+    const suffix =
+      current === undefined
+        ? ` [${pc.dim("none")}]`
+        : ` [${pc.green(String(current))}]`;
     const raw = (await ask(`${label}${suffix}: `)).trim();
     if (!raw) return current;
     const n = Number(raw);
@@ -118,10 +149,13 @@ async function pickModel(models: string[], current?: string): Promise<string> {
   };
 
   const render = () => {
-    if (renderedLines > 0) process.stderr.write(`\x1b[${renderedLines}A\x1b[0J`);
+    if (renderedLines > 0)
+      process.stderr.write(`\x1b[${renderedLines}A\x1b[0J`);
     const lines: string[] = [];
 
-    const filterLabel = filter ? `${pc.bold("Search:")} ${pc.green(filter)}█` : `${pc.bold("Search:")} ${pc.dim("(type to filter)")}`;
+    const filterLabel = filter
+      ? `${pc.bold("Search:")} ${pc.green(filter)}█`
+      : `${pc.bold("Search:")} ${pc.dim("(type to filter)")}`;
     lines.push(`  ${filterLabel}`);
     lines.push("");
 
@@ -131,17 +165,27 @@ async function pickModel(models: string[], current?: string): Promise<string> {
       const isActive = scroll + i === cursor;
       const isCurrent = m === current;
       const tag = isCurrent ? pc.dim(" ← default") : "";
-      lines.push(isActive ? `  ${pc.green("›")} ${pc.bold(pc.green(m))}${tag}` : `    ${pc.dim(m)}${tag}`);
+      lines.push(
+        isActive
+          ? `  ${pc.green("›")} ${pc.bold(pc.green(m))}${tag}`
+          : `    ${pc.dim(m)}${tag}`,
+      );
     }
 
     if (filtered.length === 0) {
       lines.push(pc.yellow("  No models match."));
     } else if (filtered.length > PAGE_SIZE) {
-      lines.push(pc.dim(`  — ${scroll + 1}–${Math.min(scroll + PAGE_SIZE, filtered.length)} / ${filtered.length} —`));
+      lines.push(
+        pc.dim(
+          `  — ${scroll + 1}–${Math.min(scroll + PAGE_SIZE, filtered.length)} / ${filtered.length} —`,
+        ),
+      );
     }
 
     lines.push("");
-    lines.push(pc.dim("  ↑/↓  navigate   Enter  select   Backspace  delete char"));
+    lines.push(
+      pc.dim("  ↑/↓  navigate   Enter  select   Backspace  delete char"),
+    );
 
     process.stderr.write(lines.join("\n"));
     renderedLines = lines.length;
@@ -162,7 +206,10 @@ async function pickModel(models: string[], current?: string): Promise<string> {
     };
 
     const onKey = (key: string) => {
-      if (key === "\x03") { cleanup(); process.exit(1); }
+      if (key === "\x03") {
+        cleanup();
+        process.exit(1);
+      }
 
       if (key === "\r" || key === "\n") {
         const chosen = filtered[cursor];
@@ -181,11 +228,13 @@ async function pickModel(models: string[], current?: string): Promise<string> {
         if (cursor >= scroll + PAGE_SIZE) scroll = cursor - PAGE_SIZE + 1;
       } else if (key === "\x7f" || key === "\x08") {
         filter = filter.slice(0, -1);
-        cursor = 0; scroll = 0;
+        cursor = 0;
+        scroll = 0;
         recompute();
       } else if (key.length === 1 && key >= " ") {
         filter += key;
-        cursor = 0; scroll = 0;
+        cursor = 0;
+        scroll = 0;
         recompute();
       }
 
@@ -196,7 +245,11 @@ async function pickModel(models: string[], current?: string): Promise<string> {
   });
 }
 
-async function collectInteractiveInputs(pathArg: string, opts: PromptOpts, models: string[]) {
+async function collectInteractiveInputs(
+  pathArg: string,
+  opts: PromptOpts,
+  models: string[],
+) {
   console.error(pc.cyan("\nInteractive mode: press Enter to keep defaults.\n"));
 
   console.error(pc.bold("Model — select the LLM to cost-estimate against:"));
@@ -207,23 +260,81 @@ async function collectInteractiveInputs(pathArg: string, opts: PromptOpts, model
   const ask = (prompt: string) => rl.question(prompt);
 
   try {
-    const enteredPath = (await ask(`Path to scan [${pc.green(pathArg || ".")}]: `)).trim();
+    const enteredPath = (
+      await ask(`Path to scan [${pc.green(pathArg || ".")}]: `)
+    ).trim();
     const nextPath = enteredPath || pathArg || ".";
-    const includeRaw = await askOptionalText(ask, "Include globs — only scan matching files (comma-separated)", opts.include?.join(", "));
-    const excludeRaw = await askOptionalText(ask, "Exclude globs — skip matching files (comma-separated)", opts.exclude?.join(", "));
+    const includeRaw = await askOptionalText(
+      ask,
+      "Include globs — only scan matching files (comma-separated)",
+      opts.include?.join(", "),
+    );
+    const excludeRaw = await askOptionalText(
+      ask,
+      "Exclude globs — skip matching files (comma-separated)",
+      opts.exclude?.join(", "),
+    );
 
-    const gitignore = await askBoolean(ask, "Respect .gitignore — skip files listed in .gitignore", opts.gitignore !== false);
-    const maxFiles = await askOptionalNumber(ask, "Max files — cap on total files scanned", opts.maxFiles);
-    const outputTokens = await askOptionalNumber(ask, "Output tokens — estimated output tokens for cost calculation", opts.outputTokens ?? 0);
-    const budget = await askOptionalNumber(ask, "Budget USD — exit with code 2 if cost exceeds this amount", opts.budget);
-    const warnContext = await askBoolean(ask, "Warn context — warn if tokens exceed model context window", Boolean(opts.warnContext));
-    const json = await askBoolean(ask, "JSON output — emit machine-readable JSON instead of table", Boolean(opts.json));
-    const verbose = await askBoolean(ask, "Verbose — show per-file token breakdown", Boolean(opts.verbose));
-    const refresh = await askBoolean(ask, "Refresh prices — force refetch of remote price table", Boolean(opts.refresh));
-    const offline = await askBoolean(ask, "Offline — use cached/static prices, skip network", Boolean(opts.offline));
-    const concurrency = await askOptionalNumber(ask, "Concurrency — parallel file workers", opts.concurrency);
-    const anthropicApiKey = await askOptionalText(ask, "Anthropic API key — exact Claude token counts via API", opts.anthropicApiKey);
-    const geminiApiKey = await askOptionalText(ask, "Gemini API key — exact Gemini token counts via API", opts.geminiApiKey);
+    const gitignore = await askBoolean(
+      ask,
+      "Respect .gitignore — skip files listed in .gitignore",
+      opts.gitignore !== false,
+    );
+    const maxFiles = await askOptionalNumber(
+      ask,
+      "Max files — cap on total files scanned",
+      opts.maxFiles,
+    );
+    const outputTokens = await askOptionalNumber(
+      ask,
+      "Output tokens — estimated output tokens for cost calculation",
+      opts.outputTokens ?? 0,
+    );
+    const budget = await askOptionalNumber(
+      ask,
+      "Budget USD — exit with code 2 if cost exceeds this amount",
+      opts.budget,
+    );
+    const warnContext = await askBoolean(
+      ask,
+      "Warn context — warn if tokens exceed model context window",
+      Boolean(opts.warnContext),
+    );
+    const json = await askBoolean(
+      ask,
+      "JSON output — emit machine-readable JSON instead of table",
+      Boolean(opts.json),
+    );
+    const verbose = await askBoolean(
+      ask,
+      "Verbose — show per-file token breakdown",
+      Boolean(opts.verbose),
+    );
+    const refresh = await askBoolean(
+      ask,
+      "Refresh prices — force refetch of remote price table",
+      Boolean(opts.refresh),
+    );
+    const offline = await askBoolean(
+      ask,
+      "Offline — use cached/static prices, skip network",
+      Boolean(opts.offline),
+    );
+    const concurrency = await askOptionalNumber(
+      ask,
+      "Concurrency — parallel file workers",
+      opts.concurrency,
+    );
+    const anthropicApiKey = await askOptionalText(
+      ask,
+      "Anthropic API key — exact Claude token counts via API",
+      opts.anthropicApiKey,
+    );
+    const geminiApiKey = await askOptionalText(
+      ask,
+      "Gemini API key — exact Gemini token counts via API",
+      opts.geminiApiKey,
+    );
 
     return {
       pathArg: nextPath,
@@ -254,18 +365,28 @@ async function collectInteractiveInputs(pathArg: string, opts: PromptOpts, model
 program.parseAsync(process.argv).then(async () => {
   let opts = program.opts<PromptOpts>();
   let [pathArg = "."] = program.args;
-  const shouldPrompt = process.stdin.isTTY && process.stdout.isTTY && (process.argv.slice(2).length === 0 || !opts.model);
+  const shouldPrompt =
+    process.stdin.isTTY &&
+    process.stdout.isTTY &&
+    (process.argv.slice(2).length === 0 || !opts.model);
 
   let isJson = Boolean(opts.json);
   let spinner = isJson ? null : ora({ stream: process.stderr });
 
   try {
     spinner?.start("Loading model prices...");
-    const initialLoad = await loadPriceTable({ refresh: Boolean(opts.refresh), offline: Boolean(opts.offline) });
+    const initialLoad = await loadPriceTable({
+      refresh: Boolean(opts.refresh),
+      offline: Boolean(opts.offline),
+    });
 
     if (shouldPrompt) {
       spinner?.stop();
-      const prompted = await collectInteractiveInputs(pathArg, opts, Object.keys(initialLoad.table));
+      const prompted = await collectInteractiveInputs(
+        pathArg,
+        opts,
+        Object.keys(initialLoad.table),
+      );
       pathArg = prompted.pathArg;
       opts = prompted.opts;
 
@@ -275,10 +396,15 @@ program.parseAsync(process.argv).then(async () => {
       spinner?.start("Loading model prices...");
     }
 
-    const load = await loadPriceTable({ refresh: Boolean(opts.refresh), offline: Boolean(opts.offline) });
+    const load = await loadPriceTable({
+      refresh: Boolean(opts.refresh),
+      offline: Boolean(opts.offline),
+    });
 
     if (!opts.model) {
-      throw new Error("Model is required. Provide --model <name> or run in interactive mode.");
+      throw new Error(
+        "Model is required. Provide --model <name> or run in interactive mode.",
+      );
     }
 
     spinner?.start("Scanning files...");
@@ -293,7 +419,10 @@ program.parseAsync(process.argv).then(async () => {
       concurrency: opts.concurrency,
       warnContext: Boolean(opts.warnContext),
       anthropicApiKey: opts.anthropicApiKey ?? process.env.ANTHROPIC_API_KEY,
-      geminiApiKey: opts.geminiApiKey ?? process.env.GOOGLE_API_KEY ?? process.env.GEMINI_API_KEY,
+      geminiApiKey:
+        opts.geminiApiKey ??
+        process.env.GOOGLE_API_KEY ??
+        process.env.GEMINI_API_KEY,
       onProgress: (done, total) => {
         if (spinner) spinner.text = `Tokenizing ${done}/${total}...`;
       },
@@ -301,7 +430,10 @@ program.parseAsync(process.argv).then(async () => {
     spinner?.stop();
 
     result.warnings.unshift(...load.warnings);
-    if (load.source === "static") result.warnings.push("Price source: bundled static (limited model coverage).");
+    if (load.source === "static")
+      result.warnings.push(
+        "Price source: bundled static (limited model coverage).",
+      );
 
     if (isJson) {
       console.log(renderJson(result));
@@ -309,8 +441,16 @@ program.parseAsync(process.argv).then(async () => {
       renderText(result, { verbose: Boolean(opts.verbose) });
     }
 
-    if (typeof opts.budget === "number" && !Number.isNaN(opts.budget) && result.totalCostUsd > opts.budget) {
-      console.error(pc.red(`✗ Cost $${result.totalCostUsd.toFixed(6)} exceeds budget $${opts.budget.toFixed(6)}`));
+    if (
+      typeof opts.budget === "number" &&
+      !Number.isNaN(opts.budget) &&
+      result.totalCostUsd > opts.budget
+    ) {
+      console.error(
+        pc.red(
+          `✗ Cost $${result.totalCostUsd.toFixed(6)} exceeds budget $${opts.budget.toFixed(6)}`,
+        ),
+      );
       process.exit(2);
     }
   } catch (err) {

@@ -30,7 +30,10 @@ export function getPriceTable(): PriceTable {
   return runtimeTable ?? loadStatic();
 }
 
-export function resolveModel(modelInput: string): { resolvedModel: string; pricing: ModelPricing } {
+export function resolveModel(modelInput: string): {
+  resolvedModel: string;
+  pricing: ModelPricing;
+} {
   const table = getPriceTable();
 
   if (table[modelInput]) {
@@ -44,17 +47,24 @@ export function resolveModel(modelInput: string): { resolvedModel: string; prici
     }
   }
 
-  const stripped = modelInput.replace(/^(openai|anthropic|google|gemini|deepseek)\//i, "");
+  const stripped = modelInput.replace(
+    /^(openai|anthropic|google|gemini|deepseek)\//i,
+    "",
+  );
   if (table[stripped]) {
     return { resolvedModel: stripped, pricing: table[stripped] };
   }
 
-  const candidates = Object.keys(table).filter((k) => k.startsWith(stripped) || stripped.startsWith(k));
+  const candidates = Object.keys(table).filter(
+    (k) => k.startsWith(stripped) || stripped.startsWith(k),
+  );
   if (candidates.length > 0) {
     candidates.sort((a, b) => b.length - a.length);
     const best = candidates[0]!;
     return { resolvedModel: best, pricing: table[best]! };
   }
 
-  throw new Error(`Unknown model "${modelInput}". Try one of: ${Object.keys(table).slice(0, 8).join(", ")}, ...`);
+  throw new Error(
+    `Unknown model "${modelInput}". Try one of: ${Object.keys(table).slice(0, 8).join(", ")}, ...`,
+  );
 }

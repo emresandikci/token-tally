@@ -30,7 +30,9 @@ export function createGeminiTokenizer(apiKey?: string): Tokenizer {
         return res.totalTokens;
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        process.stderr.write(`⚠ Gemini API countTokens failed (${msg}); falling back to chars/4.\n`);
+        process.stderr.write(
+          `⚠ Gemini API countTokens failed (${msg}); falling back to chars/4.\n`,
+        );
         return approxCount(text);
       }
     },

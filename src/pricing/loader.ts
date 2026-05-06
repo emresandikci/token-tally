@@ -33,7 +33,9 @@ function mergeStatic(table: PriceTable): PriceTable {
   return { ...fallback, ...table };
 }
 
-export async function loadPriceTable(opts: LoadOptions = {}): Promise<LoadResult> {
+export async function loadPriceTable(
+  opts: LoadOptions = {},
+): Promise<LoadResult> {
   if (memo && !opts.refresh) return memo;
 
   const warnings: string[] = [];
@@ -44,7 +46,9 @@ export async function loadPriceTable(opts: LoadOptions = {}): Promise<LoadResult
       const result: LoadResult = {
         table: mergeStatic(cache.table),
         source: isFresh(cache) ? "cache-fresh" : "cache-stale",
-        warnings: isFresh(cache) ? [] : ["Using stale cached prices (--offline)."],
+        warnings: isFresh(cache)
+          ? []
+          : ["Using stale cached prices (--offline)."],
       };
       apply(result);
       return result;
@@ -52,7 +56,9 @@ export async function loadPriceTable(opts: LoadOptions = {}): Promise<LoadResult
     const result: LoadResult = {
       table: loadStaticTable(),
       source: "static",
-      warnings: ["No price cache; falling back to bundled static prices (--offline)."],
+      warnings: [
+        "No price cache; falling back to bundled static prices (--offline).",
+      ],
     };
     apply(result);
     return result;
@@ -92,7 +98,9 @@ export async function loadPriceTable(opts: LoadOptions = {}): Promise<LoadResult
     const result: LoadResult = {
       table: loadStaticTable(),
       source: "static",
-      warnings: [`Remote price fetch failed (${msg}); using bundled static prices.`],
+      warnings: [
+        `Remote price fetch failed (${msg}); using bundled static prices.`,
+      ],
     };
     apply(result);
     return result;
