@@ -40,7 +40,12 @@ export async function tally(opts: TallyOptions): Promise<TallyResult> {
   );
 
   const totalTokens = results.reduce((s, r) => s + r.tokens, 0);
-  const outputTokens = opts.outputTokens ?? 0;
+  // Default output tokens: 20% of input when not specified.
+  // Typical LLM responses are 10–30% the size of the input context.
+  const outputTokens =
+    opts.outputTokens !== undefined
+      ? opts.outputTokens
+      : Math.round(totalTokens * 0.2);
   const inputCostUsd = totalTokens * pricing.inputCostPerToken;
   const outputCostUsd = outputTokens * pricing.outputCostPerToken;
 

@@ -23,9 +23,8 @@ program
   .option("--max-files <n>", "cap on file count", (v) => parseInt(v, 10))
   .option(
     "--output-tokens <n>",
-    "estimated output tokens for total cost",
+    "estimated output tokens for total cost (default: 20% of input)",
     (v) => parseInt(v, 10),
-    0,
   )
   .option(
     "--budget <usd>",
@@ -287,8 +286,8 @@ async function collectInteractiveInputs(
     );
     const outputTokens = await askOptionalNumber(
       ask,
-      "Output tokens — estimated output tokens for cost calculation",
-      opts.outputTokens ?? 0,
+      "Output tokens — estimated output tokens (default: 20% of input)",
+      opts.outputTokens,
     );
     const budget = await askOptionalNumber(
       ask,
