@@ -32,7 +32,6 @@ This Code of Conduct applies within all project spaces, including issues, pull r
 
 If you experience or witness unacceptable behavior, report it to:
 
-- emresandikci@gmail.com
 
 All reports will be reviewed and investigated promptly and fairly.
 
