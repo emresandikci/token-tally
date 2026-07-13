@@ -8,9 +8,6 @@ Security fixes are applied to the latest release on `main`.
 
 Please do not open public issues for security vulnerabilities.
 
-Report privately via email:
-
-- emresandikci@gmail.com
 
 Include:
 
